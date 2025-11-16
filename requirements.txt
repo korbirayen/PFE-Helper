@@ -1,0 +1,8 @@
+pandas
+requests
+beautifulsoup4
+pdfplumber
+PyPDF2
+python-dotenv
+jinja2
+python-slugify

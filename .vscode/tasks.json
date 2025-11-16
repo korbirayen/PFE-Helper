@@ -1,0 +1,42 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run aggregator: emails + csv",
+      "type": "shell",
+      "command": "python",
+      "args": [
+        "scripts/aggregator_bot.py",
+        "--top",
+        "30",
+        "--fitness",
+        "High,Medium",
+        "--generate-emails",
+        "--save-csv"
+      ],
+      "group": "none",
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run aggregator: Telegram High last 7 days",
+      "type": "shell",
+      "command": "python",
+      "args": [
+        "scripts/aggregator_bot.py",
+        "--post-telegram",
+        "--fitness",
+        "High",
+        "--since-days",
+        "7"
+      ],
+      "group": "none",
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

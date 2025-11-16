@@ -1,0 +1,53 @@
+# French version
+
+Objet: Candidature stage PFE – Instagram (ITGate Group)
+
+Bonjour,
+
+Je me permets de vous contacter au sujet de l'opportunité de stage PFE intitulée
+"Instagram" chez ITGate Group.
+
+Je suis actuellement étudiant(e) en dernière année et je m'intéresse particulièrement
+à ce sujet, qui correspond bien à mon profil et à mes compétences.
+
+Quelques informations:
+- Projet: Instagram
+- Entreprise: ITGate Group
+- Lien / Source: https://www.instagram.com/itgate.group/
+- Fitness (depuis le fichier CSV): High (approximation, à vérifier)
+Vous trouverez ci-joint mon CV pour plus de détails sur mon parcours.
+
+APPARTEMENT 1, BLOC 11, RESIDENCE EL MOUNA,
+Email: Stagiairecontact.rayenkorbi@gmail.com
+Téléphone: +21650243581 07
+
+--
+Note: cette candidature a été préparée automatiquement par mon bot "PFE Aggregator".
+Merci de vérifier manuellement les informations avant envoi.
+
+# English version
+
+Subject: PFE Internship Application – Instagram (ITGate Group)
+
+Hello,
+
+I am reaching out regarding the PFE internship opportunity titled
+"Instagram" at ITGate Group.
+
+I am currently a final-year student and I am very interested in this topic,
+which seems well aligned with my skills and background.
+
+Some details:
+- Project: Instagram
+- Company: ITGate Group
+- Link / Source: https://www.instagram.com/itgate.group/
+- Fitness (from CSV): High (approximate match, please double-check)
+Please find my CV attached for more information.
+
+APPARTEMENT 1, BLOC 11, RESIDENCE EL MOUNA,
+Email: Stagiairecontact.rayenkorbi@gmail.com
+Phone: +21650243581 07
+
+--
+Note: this draft was prepared automatically by my "PFE Aggregator" bot.
+Please review and edit before sending.
