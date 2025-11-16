@@ -32,6 +32,7 @@ from .utils import (
     detect_default_pfe_pdf,
     ensure_tracker_exists,
     load_env,
+    load_tracker_index,
     make_project_id,
     match_company_fitness,
     parse_cv_contact_info,
@@ -39,15 +40,13 @@ from .utils import (
     parse_since_days,
     read_companies_csv,
     tracker_path,
+    update_tracker_field,
     update_tracker_status,
 )
 
 
 SCRAPE_SOURCES = [
-    "https://www.pfebook.com/",
-    "https://hi-interns.com/internships",
-    "https://itgate-group.com/catalogue-pfe/",
-    "https://rh.medianet.tn/Fr/stages-pfe-2026_11_50",
+    # Focus only on pfebooks.com as requested
     "https://pfebooks.com/",
 ]
 
@@ -231,6 +230,8 @@ def generate_email_drafts(df: pd.DataFrame, my_info: Dict[str, str]) -> int:
             f.write(body_fr)
             f.write("\n\n# English version\n\n")
             f.write(body_en)
+        # mark in tracker
+        update_tracker_field(str(row.get("project_id", slug)), "email_draft", filename)
         count += 1
     return count
 
@@ -244,7 +245,14 @@ def post_to_telegram(df: pd.DataFrame) -> int:
 
     base_url = f"https://api.telegram.org/bot{token}/sendMessage"
     count = 0
+    tracker_index = load_tracker_index()
     for _, row in df.iterrows():
+        pid = str(row.get("project_id") or "")
+        # Skip if already posted
+        if pid and pid in tracker_index:
+            posted_before = tracker_index[pid].get("posted_telegram", "").strip().lower()
+            if posted_before in {"1", "true", "yes", "y"}:
+                continue
         text = f"PFE: {row['title']} — {row['company'] or 'N/A'}\nFitness: {row['fitness'] or 'N/A'}"\
             f"{' (approx company match)' if row.get('fitness_match_approx') else ''}\n"\
             f"Link: {row['link'] or row['source_url']}"
@@ -255,6 +263,8 @@ def post_to_telegram(df: pd.DataFrame) -> int:
                 logging.warning("Telegram API error %s: %s", resp.status_code, resp.text)
             else:
                 count += 1
+                if pid:
+                    update_tracker_field(pid, "posted_telegram", "1")
         except Exception as exc:  # pragma: no cover
             logging.warning("Error posting to Telegram: %s", exc)
     return count
@@ -270,7 +280,13 @@ def create_github_issues(df: pd.DataFrame) -> int:
     base_url = f"https://api.github.com/repos/{repo}/issues"
     headers = {"Authorization": f"token {token}", "Accept": "application/vnd.github+json"}
     count = 0
+    tracker_index = load_tracker_index()
     for _, row in df.iterrows():
+        pid = str(row.get("project_id") or "")
+        # Skip if issue already created
+        if pid and pid in tracker_index:
+            if tracker_index[pid].get("github_issue_url"):
+                continue
         title = f"PFE: {row['title']} — {row['company'] or 'N/A'}"
         body = render_issue(row.to_dict())
         payload = {"title": title, "body": body}
@@ -280,6 +296,13 @@ def create_github_issues(df: pd.DataFrame) -> int:
                 logging.warning("GitHub API error %s: %s", resp.status_code, resp.text)
             else:
                 count += 1
+                if pid:
+                    try:
+                        issue_url = resp.json().get("html_url", "")
+                    except Exception:  # pragma: no cover
+                        issue_url = ""
+                    if issue_url:
+                        update_tracker_field(pid, "github_issue_url", issue_url)
         except Exception as exc:  # pragma: no cover
             logging.warning("Error creating GitHub issue: %s", exc)
     return count

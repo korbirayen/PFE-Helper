@@ -269,6 +269,59 @@ def update_tracker_status(project_id: str, status: str) -> bool:
     return True
 
 
+def load_tracker_index() -> Dict[str, Dict[str, str]]:
+    """Load tracker.csv into a dict keyed by project_id.
+
+    Returns an empty dict if the tracker does not exist yet.
+    """
+
+    path = tracker_path()
+    if not path.exists():
+        return {}
+
+    index: Dict[str, Dict[str, str]] = {}
+    with path.open("r", newline="", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for r in reader:
+            pid = r.get("project_id") or ""
+            if pid:
+                index[pid] = r
+    return index
+
+
+def update_tracker_field(project_id: str, field: str, value: str) -> bool:
+    """Update a single field for a project in tracker.csv.
+
+    Returns True if a row was updated.
+    """
+
+    path = tracker_path()
+    if not path.exists():
+        return False
+
+    rows: List[Dict[str, str]] = []
+    updated = False
+    with path.open("r", newline="", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        cols = reader.fieldnames or TRACKER_COLUMNS
+        for r in reader:
+            if r.get("project_id") == project_id:
+                r[field] = value
+                r["last_action"] = dt.datetime.utcnow().isoformat()
+                updated = True
+            rows.append(r)
+
+    if not updated:
+        return False
+
+    with path.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=cols)
+        writer.writeheader()
+        writer.writerows(rows)
+
+    return True
+
+
 @dataclass
 class ContactInfo:
     name: str | None = None
@@ -376,6 +429,8 @@ __all__ = [
     "ensure_tracker_exists",
     "append_tracker_row",
     "update_tracker_status",
+    "load_tracker_index",
+    "update_tracker_field",
     "tracker_path",
     "parse_cv_contact_info",
     "parse_fitness_filter",
